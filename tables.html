@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tables Page</title>
+
+  <!-- Latest compiled and minified CSS & JS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="jumbotron">
+      <h1 class="text-center"><span class="fa fa-fire"></span> Hot Restaurant</h1>
+      <hr>
+      <h2 class="text-center">Current Reservations and Waiting List</h2>
+      <br>
+
+      <div class="text-center">
+        <a href="/reserve"><button class="btn btn-lg btn-danger"><span class="fa fa-credit-card"></span> Make Reservation</button></a>
+        <a href="/"><button class="btn btn-lg btn-default"><span class="fa fa-home"></span></button></a>
+      </div>
+      <br>
+      <h4 id="views" class="text-center"></h4>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+
+        <!-- Current Tables in Use -->
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h4>Current Reservations</h4>
+          </div>
+          <div class="card-body">
+            <ul id="tableList" class="list-group"></ul>
+          </div>
+        </div>
+
+        <!-- Waiting List Card -->
+        <div class="card mt-4">
+          <div class="card-header bg-warning text-white">
+            <h4>Waiting List</h4>
+          </div>
+          <div class="card-body">
+            <ul id="waitList" class="list-group"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <footer class="footer mt-4">
+      <div class="container">
+        <p>Control Panel</p>
+        <p><a href="#" id="clear">Clear Table</a> | <a href="/api/tables">API Table Link</a> | <a href="/api/waitlist">API
+            Wait List</a>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+
+
+<!-- BELOW CODE IS CRITICAL. IT HANDLES HOW FORM DATA IS LOADED FROM OUR SERVER -->
+<script type="text/javascript">
+
+function getTable() {
+    $.ajax({url: "api/tables", method: "GET"}).then(function(table) {
+      for(var i = 0; i < table.length; i++) {
+        var tableList = $("#tableList");
+        var tableItem = $("<li id= 'table' class='list-group-item mt-4'>");
+
+        tableItem.append(
+          $("<h2>").text("Table " + (i + 1)),
+          $("<hr>"),
+          $("<h3 id='id'>").text("ID: " + table[i].id),
+          $("<h3 id='name'>").text("Name: " + table[i].name),
+          $("<h3 id='email'>").text("Email: " + table[i].email),
+          $("<h3 id='phone'>").text("Phone: " + table[i].phone)
+        );
+
+        tableList.append(tableItem);
+      }
+      
+    });
+  }
+
+  function getWaitlist() {
+    $.ajax({url: "api/waitlist", method: "GET"}).then(function(waitlist) {
+      for(var i = 0; i < waitlist.length; i++) {
+        var waitlistList = $("#waitList");
+        var waitlistItem = $("<li class='list-group-item mt-4'>");
+
+        waitlistItem.append(
+          $("<h2>").text("Spot " + (i + 1)),
+          $("<hr>"),
+          $("<h3>").text("ID: " + waitlist[i].id),
+          $("<h3>").text("Name: " + waitlist[i].name),
+          $("<h3>").text("Email: " + waitlist[i].email),
+          $("<h3>").text("Phone: " + waitlist[i].phone)
+        );
+
+        waitlistList.append(waitlistItem);
+      }
+      
+    });
+  }
+
+  $("#clear").on("click", function(event) {
+    event.preventDefault();
+    $.ajax({url: "api/clear", method: "POST"});
+
+    $("#tableList").empty();
+    $("#waitList").empty();
+    alert("Contents Cleared!");
+  });
+
+  $("#tableList").on("click", "#table", function(event){
+    var removeTable = {
+      name: $(this).find("#name").text().replace("Name: ", ""),
+      phone: $(this).find("#phone").text().replace("Phone: ", ""),
+      email: $(this).find("#email").text().replace("Email: ", ""),
+      id: $(this).find("#id").text().replace("ID: ", "")
+    };
+    
+    $.post("/api/check", removeTable, function() {
+      alert("Reservation removed");
+    });
+    var tableList = $("#tableList");
+    var waitlistList = $("#waitList");
+
+    tableList.empty();
+    waitlistList.empty();
+    getTable();
+    getWaitlist();
+  });
+
+  //Run Queries
+  getTable();
+  getWaitlist();
+
+
+</script>
+
+<script type="text/javascript">
+  $.ajax({url: "api/views", method: "GET"}).then(function(views) {
+    var viewsText = $("#views");
+    viewsText.text("Views: " + views);
+  });
+</script>
+
+</html>

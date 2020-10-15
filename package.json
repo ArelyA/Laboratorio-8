@@ -1,0 +1,28 @@
+{
+  "name": "Laboratorio-8",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArelyA/Laboratorio-8.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArelyA/Laboratorio-8/issues"
+  },
+  "homepage": "https://github.com/ArelyA/Laboratorio-8#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jquery": "^3.5.1",
+    "nodemailer": "^6.4.14"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.5"
+  }
+}
